@@ -1,8 +1,10 @@
-import { useTheme } from "./ThemeProvider";
+import { THEME, useTheme } from "./context/ThemeProvider";
 import clsx from "clsx";
+import { ReactElement } from "react";
 
-export default function ThemeToggleButton() : Element {
-    const { theme, toggleTheme } = useTheme();
+export default function ThemeToggleButton(): ReactElement {
+
+    const { theme, toggleTheme } = useTheme() || {};
     
     const isLightMode = theme === THEME.LIGHT;
 

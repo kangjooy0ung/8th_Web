@@ -1,10 +1,10 @@
-import { ThemeProvider } from "./ThemeProvider"
+import { ThemeProvider } from "./context/ThemeProvider"
 import Navbar from "./Navbar"
 import ThemeContent from "./ThemeContent"
+import { ReactElement } from "react"; 
 
-
-export default function ContextPage() : Element {
-    return {
+export default function ContextPage(): ReactElement {
+    return (
         <ThemeProvider>
          <div className='flex flex-col items-center justify-center min-h-screen'>  
             <Navbar />
@@ -13,5 +13,5 @@ export default function ContextPage() : Element {
             </main>
          </div>
         </ThemeProvider>
-    };
+    );
 }

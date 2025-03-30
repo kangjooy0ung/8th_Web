@@ -1,4 +1,5 @@
 import {createContext, PropsWithChildren, useContext, useState} from "react";
+import { ReactElement } from "react";
 
 export enum THEME{
     LIGHT = 'LIGHT',
@@ -14,7 +15,7 @@ interface IThemeContext {
 
 export const ThemeContext = createContext<IThemeContext | undefined>(undefined); 
 
-export const ThemeProvider = ({children} : PropsWithChildren) : Element => {
+export const ThemeProvider = ({children} : PropsWithChildren) : ReactElement => {
     const [theme, setTheme] = useState<TTheme>(THEME.LIGHT);
 
     const toggleTheme = () : void => { 
@@ -24,13 +25,13 @@ export const ThemeProvider = ({children} : PropsWithChildren) : Element => {
     };
 
     return (
-        <ThemeContext.Provider value={(theme, toggleTheme)}> 
+        <ThemeContext.Provider value={{theme, toggleTheme}}> 
         {children}
         </ThemeContext.Provider>
     );
 };
 
-export const useTheme = () : void => {
+export const useTheme = () : IThemeContext => {
     const context = useContext(ThemeContext);
 
     if (!context) {
@@ -38,4 +39,4 @@ export const useTheme = () : void => {
     }
 
     return context;
-}
+};
