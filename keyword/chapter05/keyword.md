@@ -11,3 +11,27 @@
         사용자가 로그인된 상태를 악용해서
         
         공격자가 원하지 않는 요청을 보내도록 만드는 공격
+
+- Protected Route를 직접 구현해보세요 🍠
+
+import { Navigate } from 'react-router-dom';
+import { PropsWithChildren } from 'react';
+
+const role = 'ADMIN';
+
+interface ProtectedRouteProps {
+  requiredRole: string;
+}
+
+function ProtectedRoute({ children, requiredRole }: PropsWithChildren<ProtectedRouteProps>) {
+  if (role !== requiredRole) {
+   
+    alert('접근 권한이 없습니다.');
+    return <Navigate to="/" replace />;
+  }
+
+  
+  return <>{children}</>;
+}
+
+export default ProtectedRoute;
