@@ -8,7 +8,7 @@ const MyPage = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  // 초기값은 null로 설정하여 타입 오류 방지
+  
   const [data, setData] = useState<ResponseMyInfoDto | null>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const MyPage = () => {
     }
   };
 
-  // 로딩 처리
+
   if (!data) return <div className="text-center mt-10">로딩 중...</div>;
 
   return (
@@ -45,7 +45,7 @@ const MyPage = () => {
       <img
         src={data.data?.avatar ?? "https://via.placeholder.com/120"}
         alt="프로필 이미지"
-        className="w-[120px] h-[120px] rounded-full object-cover"
+        className="w-[120px] h-[120px] rounded-full object-cover text-black"
       />
       <h2 className="text-lg text-gray-600">{data.data?.email}</h2>
 

@@ -1,26 +1,36 @@
-import { RequestSignupDto, RequestSigninDto, ResponseSigninDto, ResponseSignupDto, ResponseMyInfoDto } from "../types/auth.ts"
-import { axiosInstance } from "./axios"
+import { axiosInstance } from "./axios.ts";
+import {
+  RequestSignupDto,
+  ResponseSignupDto,
+  RequestSigninDto,
+  ResponseSigninDto,
+  ResponseMyInfoDto,
+} from "../types/auth.ts";
 
-export const postSignup = async (body: RequestSignupDto):Promise<ResponseSignupDto> => {
-    const { data } = await axiosInstance.post("/v1/auth/signup", body)
+export const postSignup = async (
+  body: RequestSignupDto
+): Promise<ResponseSignupDto> => {
+  const { data } = await axiosInstance.post("/v1/auth/signup", body);
 
-    return data
-}
+  return data;
+};
 
-export const postSignin = async (body: RequestSigninDto):Promise<ResponseSigninDto> => {
-    const { data } = await axiosInstance.post("/v1/auth/signin", body)
+export const postSignin = async (
+  body: RequestSigninDto
+): Promise<ResponseSigninDto> => {
+  const { data } = await axiosInstance.post("/v1/auth/signin", body);
 
-    return data
-}
+  return data;
+};
 
-export const getMyInfo = async():Promise<ResponseMyInfoDto> => {
-    const {data} = await axiosInstance.get("/v1/users/me")
+export const getMyInfo = async (): Promise<ResponseMyInfoDto> => {
+  const { data } = await axiosInstance.get("/v1/users/me");
 
-    return data
-}
+  return data;
+};
 
 export const postLogout = async () => {
-    const {data} = await axiosInstance.post("/v1/auth/signout")
+  const {data} = await axiosInstance.post("/v1/auth/signout")
 
-    return data
+  return data;
 }
