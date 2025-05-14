@@ -32,3 +32,9 @@ export type Lp = {
   export type ResponseLpDto = CommonResponse<Lp>
   
   export type ResponseLpListDto = CursorBasedResponse<Lp[]>;
+
+  export type ResponseLikeLpDto = CommonResponse<{
+    id: number;
+    userId:number;
+    lpId:number;
+  }>
