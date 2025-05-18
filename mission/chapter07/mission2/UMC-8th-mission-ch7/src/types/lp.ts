@@ -25,11 +25,23 @@ export type Lp = {
     likes: Likes[];
   };
 
+  export type LpDetailDto = Lp & {
+    author: {
+        id: number;
+        name: string;
+        email: string;
+        bio: string | null;
+        avatar: string | null;
+        createdAt: string;
+        updatedAt: string;
+    };
+};
+
   export type RequestLpDto = {
     lpId: number
   } 
 
-  export type ResponseLpDto = CommonResponse<Lp>
+  export type ResponseLpDto = CommonResponse<LpDetailDto>
   
   export type ResponseLpListDto = CursorBasedResponse<Lp[]>;
 
