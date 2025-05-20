@@ -5,6 +5,7 @@ import {
   RequestSigninDto,
   ResponseSigninDto,
   ResponseMyInfoDto,
+  ResponseDeleteUserDto
 } from "../types/auth.ts";
 
 export const postSignup = async (
@@ -34,3 +35,8 @@ export const postLogout = async () => {
 
   return data;
 }
+
+export const deleteUser = async (): Promise<ResponseDeleteUserDto> => {
+  const { data } = await axiosInstance.delete<ResponseDeleteUserDto>("/v1/users");
+  return data;
+};

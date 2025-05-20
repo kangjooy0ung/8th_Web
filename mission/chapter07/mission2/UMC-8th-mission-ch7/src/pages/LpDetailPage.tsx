@@ -1,53 +1,36 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getLpDetail } from "../apis/lp";
 import { LpDetailDto } from "../types/lp";
 import { FaEdit, FaTrash, FaHeart } from "react-icons/fa";
-import useGetMyInfo from "../hooks/queries/useGetMyInfo";
-import usePostLike from "../hooks/mutations/usePostLike";
-import useDeleteLike from "../hooks/mutations/useDeleteLike";
+import LpComments from "../components/LpComment/LpComments";
+import { useAddLike } from "../hooks/mutations/useAddLike";
+import { useRemoveLike } from "../hooks/mutations/useRemoveLike";
 
 const LpDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const lpId = Number(id);
   const navigate = useNavigate();
-  const { accessToken } = useAuth();
+  const { accessToken, user } = useAuth();
 
-  if (!accessToken) {
-    if (window.confirm("로그인이 필요한 서비스입니다. 로그인을 해주세요!")) {
+  // 모든 훅은 조건문 바깥에서 호출
+  const { data: lp, isLoading, isError } = useQuery<LpDetailDto>({
+    queryKey: ["lpDetail", lpId],
+    queryFn: () => getLpDetail(lpId),
+    enabled: !!lpId && !!accessToken,
+  });
+
+  const addLikeMutation = useAddLike(lpId);
+  const removeLikeMutation = useRemoveLike(lpId);
+
+  // 로그인 안 되어 있으면 로그인 유도
+  if (!accessToken || !user) {
+    if (window.confirm("로그인이 필요한 서비스입니다.\n로그인하시겠습니까?")) {
       navigate("/login");
     }
     return null;
   }
-
-  // LP 상세 정보 가져오기
-  const {
-    data: lp,
-    isLoading,
-    isError,
-  } = useQuery<LpDetailDto>({
-    queryKey: ["lpDetail", id],
-    queryFn: () => getLpDetail(Number(id)),
-    enabled: !!id,
-  });
-
-  // 유저 정보 가져오기
-  const { data: myInfo } = useGetMyInfo(accessToken);
-
-  // 좋아요 관련 핸들링
-  const { mutate: likeMutate } = usePostLike();
-  const { mutate: disLikeMutate } = useDeleteLike();
-
-  const isLiked = lp?.likes.some((like) => like.userId === myInfo?.data.id);
-
-  const handleLikeToggle = () => {
-    if (!lp) return;
-    if (isLiked) {
-      disLikeMutate({ lpId: lp.id });
-    } else {
-      likeMutate({ lpId: lp.id });
-    }
-  };
 
   if (isLoading) {
     return <div className="mt-20 text-center">Loading...</div>;
@@ -57,9 +40,20 @@ const LpDetailPage = () => {
     return <div className="mt-20 text-center">조회된 LP가 없습니다.</div>;
   }
 
+  // 현재 사용자가 좋아요를 눌렀는지 여부
+  const isLiked = lp.likes.some((l) => l.userId === user.id);
+
+  const handleLike = () => {
+    if (isLiked) {
+      removeLikeMutation.mutate();
+    } else {
+      addLikeMutation.mutate();
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-3xl font-bold mb-4">{lp.title}</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">{lp.title}</h1>
 
       {lp.thumbnail && (
         <div className="flex justify-center mb-8">
@@ -89,12 +83,12 @@ const LpDetailPage = () => {
         ))}
       </div>
 
-      <div className="text-sm text-gray-500 mb-6">
+      <div className="text-sm text-gray-500 mb-6 text-center">
         작성자: {lp.author.name} · 좋아요 {lp.likes.length} ·{" "}
         {new Date(lp.createdAt).toLocaleDateString("ko-KR")}
       </div>
 
-      <div className="flex space-x-4">
+      <div className="flex justify-center space-x-4 mb-8">
         <button className="flex items-center px-4 py-2 border rounded hover:bg-gray-100">
           <FaEdit className="mr-2" /> 수정
         </button>
@@ -102,15 +96,17 @@ const LpDetailPage = () => {
           <FaTrash className="mr-2" /> 삭제
         </button>
         <button
-          onClick={handleLikeToggle}
+          onClick={handleLike}
           className={`flex items-center px-4 py-2 border rounded ${
-            isLiked ? "text-red-500" : ""
-          } hover:bg-gray-100`}
+            isLiked ? "bg-red-100 text-red-600" : "hover:bg-gray-100"
+          }`}
         >
           <FaHeart className="mr-2" />
           {isLiked ? "좋아요 취소" : "좋아요"}
         </button>
       </div>
+
+      <LpComments lpId={lpId} limit={10} />
     </div>
   );
 };

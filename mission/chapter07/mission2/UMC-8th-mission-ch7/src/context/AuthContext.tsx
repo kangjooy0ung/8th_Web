@@ -4,10 +4,16 @@ import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { postSignin, postLogout } from "../apis/auth";
 import { RequestSigninDto } from "../types/auth";
 
+// User 타입 정의
+interface User {
+  id: number;
+  name: string;
+}
+
 interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
-  user: { name: string } | null;
+  user: User | null;
   login: (signinData: RequestSigninDto) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -45,7 +51,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(
     getRefreshTokenFromStorage()
   );
-  const [user, setUser] = useState<{ name: string } | null>(
+  const [user, setUser] = useState<User | null>(
     JSON.parse(getUserFromStorage() || "null")
   );
 
@@ -57,7 +63,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       if (data) {
         const newAccessToken = data.accessToken;
         const newRefreshToken = data.refreshToken;
-        const newUser = { name: data.name };
+
+        // ✅ id 포함된 user 객체 생성
+        const newUser: User = { id: data.id, name: data.name };
 
         // localStorage에 저장
         setAccessTokenInStorage(newAccessToken);
@@ -101,7 +109,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ accessToken, refreshToken, user, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
